@@ -1,25 +1,5 @@
-# Ignore Maven and build-related files
-HELP.md
+# Maven
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-# IntelliJ IDEA-specific files
-.idea
-*.iws
-*.iml
-*.ipr
-
-# Logs and environment files
-logs/
-*.log
-.env
-
-# Compiled classes
-*.class
-
-# Packaged files
 *.jar
 *.war
 *.nar
@@ -27,11 +7,30 @@ logs/
 *.zip
 *.tar.gz
 *.rar
+HELP.md
 
-# Maven wrapper
-.mvn/
-mvnw
-mvnw.cmd
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+*.class
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.local
 
 # Docker
 .docker/
+
+# OS
+.DS_Store
+Thumbs.db
