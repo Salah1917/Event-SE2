@@ -1,0 +1,22 @@
+@startuml
+start
+
+:Participant browses available events;
+:Participant selects an event to register;
+:Participant clicks "Register" button;
+
+:System checks event capacity;
+:System counts current confirmed registrations;
+
+if (Capacity available?) then (yes)
+  :System creates registration with\nstatus CONFIRMED;
+  :System confirms registration;
+  stop
+else (no)
+  :System creates registration with\nstatus WAITLISTED;
+  :System adds participant to waitlist;
+  :System notifies participant\nof waitlist position;
+  stop
+endif
+
+@enduml

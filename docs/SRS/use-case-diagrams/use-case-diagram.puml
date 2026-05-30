@@ -1,0 +1,56 @@
+@startuml
+left to right direction
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam backgroundColor #FFFFFF
+skinparam useCase {
+  BackgroundColor #E8F4FD
+  BorderColor #2E86C1
+  ArrowColor #2E86C1
+}
+skinparam actor {
+  BorderColor #1B4F72
+  BackgroundColor #AED6F1
+}
+
+rectangle "Event Registration System" {
+  usecase "Create Event" as UC1
+  usecase "Update Event" as UC2
+  usecase "Cancel Event" as UC3
+  usecase "Reschedule Event" as UC4
+  usecase "View Events" as UC5
+  usecase "View Registrations" as UC6
+  usecase "Register for Event" as UC7
+  usecase "Cancel Registration" as UC8
+  usecase "View My Registrations" as UC9
+  usecase "Manage Users" as UC10
+  usecase "Manage All Events" as UC11
+  usecase "View All Registrations" as UC12
+}
+
+actor "Event Organizer" as Organizer
+actor "Participant" as Participant
+actor "Admin" as Admin
+
+Organizer --> UC1
+Organizer --> UC2
+Organizer --> UC3
+Organizer --> UC4
+Organizer --> UC5
+Organizer --> UC6
+
+Participant --> UC5
+Participant --> UC7
+Participant --> UC8
+Participant --> UC9
+
+Admin --> UC10
+Admin --> UC11
+Admin --> UC12
+
+note right of UC1 : Organizer fills event details\nform and submits
+note right of UC7 : Participant selects event\nand confirms registration
+note right of UC10 : Admin manages user accounts\nand role assignments
+
+@enduml

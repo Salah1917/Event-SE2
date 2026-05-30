@@ -1,0 +1,62 @@
+@startuml
+actor "User" as User
+participant "UI (Login Form)" as UI
+participant "API Gateway\n(:8080)" as Gateway
+participant "Auth Controller" as AuthCtrl
+participant "Auth Service" as AuthSvc
+participant "User Details\nService" as UserDetails
+participant "JWT Utils" as Jwt
+participant "User Repository" as UserRepo
+database "User DB\n(PostgreSQL)" as UserDB
+
+User -> UI: Enter username & password
+UI -> Gateway: POST /api/auth/login\n(LoginRequest JSON)
+activate Gateway
+
+Gateway -> Gateway: Public path - skip JWT filter
+Gateway -> AuthCtrl: POST /api/auth/login
+activate AuthCtrl
+
+AuthCtrl -> AuthSvc: authenticateUser(LoginRequest)
+activate AuthSvc
+
+AuthSvc -> AuthSvc: Create UsernamePasswordAuthenticationToken
+AuthSvc -> AuthenticationManager: authenticate(token)
+activate AuthenticationManager
+AuthenticationManager -> UserDetails: loadUserByUsername(username)
+activate UserDetails
+
+UserDetails -> UserRepo: findByUsername(username)
+activate UserRepo
+UserRepo -> UserDB: SELECT * FROM users WHERE username=?
+activate UserDB
+UserDB --> UserRepo: User entity
+deactivate UserDB
+UserRepo --> UserDetails: User
+deactivate UserRepo
+
+UserDetails -> UserDetails: Build UserDetailsImpl\n(with roles & authorities)
+UserDetails --> AuthenticationManager: UserDetails
+deactivate UserDetails
+
+AuthenticationManager --> AuthSvc: Authentication object
+deactivate AuthenticationManager
+
+AuthSvc -> Jwt: generateJwtToken(authentication)
+activate Jwt
+Jwt -> Jwt: Build JWT with subject,\nissuedAt, expiration
+Jwt --> AuthSvc: JWT string
+deactivate Jwt
+
+AuthSvc --> AuthCtrl: JwtResponse(token,\nid, username, email, roles)
+deactivate AuthSvc
+
+AuthCtrl --> Gateway: 200 OK (JwtResponse JSON)
+deactivate AuthCtrl
+
+Gateway --> UI: JSON response (JWT token)
+deactivate Gateway
+
+UI -> UI: Store token in localStorage
+UI --> User: Redirect to dashboard
+@enduml

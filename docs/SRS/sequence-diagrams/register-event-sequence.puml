@@ -1,0 +1,61 @@
+@startuml
+actor "Participant" as Participant
+participant "UI (Thymeleaf)" as UI
+participant "API Gateway\n(:8080)" as Gateway
+participant "Registration\nController" as RegController
+participant "Registration\nService" as RegService
+participant "Event Service\n(REST call)" as EventService
+participant "Registration\nRepository" as RegRepo
+database "Registration\nDB" as RegDB
+
+Participant -> UI: Select event & click register
+UI -> Gateway: POST /api/registrations\n(JWT + RegistrationDTO)
+activate Gateway
+
+Gateway -> Gateway: Validate JWT
+Gateway -> RegController: POST /api/registrations
+activate RegController
+
+RegController -> RegService: createRegistration(RegistrationDTO)
+activate RegService
+
+RegService -> EventService: GET /api/events/{eventId}\n(fetch capacity)
+activate EventService
+EventService --> RegService: EventResponseDTO\n(with capacity)
+deactivate EventService
+
+RegService -> RegRepo: countByEventIdAndStatus(eventId, CONFIRMED)
+activate RegRepo
+RegRepo -> RegDB: SELECT COUNT(*) FROM registrations...
+activate RegDB
+RegDB --> RegRepo: count
+deactivate RegDB
+RegRepo --> RegService: current count
+deactivate RegRepo
+
+alt capacity available
+  RegService -> RegService: Set status = CONFIRMED
+else capacity full
+  RegService -> RegService: Set status = WAITLISTED
+end
+
+RegService -> RegRepo: save(Registration)
+activate RegRepo
+RegRepo -> RegDB: INSERT INTO registrations...
+activate RegDB
+RegDB --> RegRepo: Registration entity
+deactivate RegDB
+RegRepo --> RegService: saved Registration
+deactivate RegRepo
+
+RegService --> RegController: RegistrationResponseDTO
+deactivate RegService
+
+RegController --> Gateway: 201 Created
+deactivate RegController
+
+Gateway --> UI: JSON response
+deactivate Gateway
+
+UI --> Participant: Show confirmation/waitlist message
+@enduml

@@ -1,0 +1,458 @@
+@startuml
+skinparam class {
+  BackgroundColor #E8F4FD
+  BorderColor #2E86C1
+  ArrowColor #1B4F72
+}
+skinparam package {
+  BackgroundColor #F0F0F0
+  BorderColor #666666
+}
+
+package "Event Service" as ES #FFF3CD {
+  class EventServiceApplication {
+    +main(String[] args): void
+  }
+
+  class EventController {
+    -eventService: EventService
+    +createEvent(EventDTO): ResponseEntity<EventResponseDTO>
+    +getAllEvents(): ResponseEntity<List<EventResponseDTO>>
+    +getEventById(Long): ResponseEntity<EventResponseDTO>
+    +updateEvent(Long, EventDTO): ResponseEntity<EventResponseDTO>
+    +deleteEvent(Long): ResponseEntity<Void>
+    +rescheduleEvent(Long, LocalDateTime, LocalDateTime): ResponseEntity<EventResponseDTO>
+    +getUpcomingEvents(): ResponseEntity<List<EventResponseDTO>>
+    +getEventsByOrganizer(Long): ResponseEntity<List<EventResponseDTO>>
+  }
+
+  interface EventService {
+    +createEvent(EventDTO): EventResponseDTO
+    +getAllEvents(): List<EventResponseDTO>
+    +getEventById(Long): EventResponseDTO
+    +updateEvent(Long, EventDTO): EventResponseDTO
+    +deleteEvent(Long): void
+    +rescheduleEvent(Long, LocalDateTime, LocalDateTime): EventResponseDTO
+    +getUpcomingEvents(): List<EventResponseDTO>
+    +getEventsByOrganizer(Long): List<EventResponseDTO>
+  }
+
+  class EventServiceImpl {
+    -eventRepository: EventRepository
+    +createEvent(EventDTO): EventResponseDTO
+    +getAllEvents(): List<EventResponseDTO>
+    +getEventById(Long): EventResponseDTO
+    +updateEvent(Long, EventDTO): EventResponseDTO
+    +deleteEvent(Long): void
+    +rescheduleEvent(Long, LocalDateTime, LocalDateTime): EventResponseDTO
+    +getUpcomingEvents(): List<EventResponseDTO>
+    +getEventsByOrganizer(Long): List<EventResponseDTO>
+  }
+
+  interface EventRepository {
+    +findByOrganizerId(Long): List<Event>
+    +findUpcomingEvents(LocalDateTime): List<Event>
+    +findByStartDateBetween(LocalDateTime, LocalDateTime): List<Event>
+    +findByStatus(Event.EventStatus): List<Event>
+  }
+
+  class Event {
+    -id: Long
+    -name: String
+    -description: String
+    -location: String
+    -startDate: LocalDateTime
+    -endDate: LocalDateTime
+    -capacity: Integer
+    -status: EventStatus
+    -organizerId: Long
+    -createdAt: LocalDateTime
+    -updatedAt: LocalDateTime
+    <<enum>> EventStatus { UPCOMING, ONGOING, COMPLETED, CANCELLED }
+  }
+
+  class EventDTO {
+    -name: String
+    -description: String
+    -location: String
+    -startDate: LocalDateTime
+    -endDate: LocalDateTime
+    -capacity: Integer
+    -organizerId: Long
+  }
+
+  class EventResponseDTO {
+    -id: Long
+    -name: String
+    -description: String
+    -location: String
+    -startDate: LocalDateTime
+    -endDate: LocalDateTime
+    -capacity: Integer
+    -status: String
+    -organizerId: Long
+    -createdAt: LocalDateTime
+    -updatedAt: LocalDateTime
+    +fromEntity(Event): EventResponseDTO
+  }
+
+  class LoggingAspect {
+    +logExecutionTime(ProceedingJoinPoint): Object
+    +logAfterThrowing(Throwable): void
+  }
+
+  class PerformanceMonitoringAspect {
+    +monitorPerformance(ProceedingJoinPoint): Object
+  }
+
+  class ResourceNotFoundException {
+    -id: Object
+  }
+
+  class GlobalExceptionHandler {
+    +handleResourceNotFound(ResourceNotFoundException): ResponseEntity
+    +handleIllegalArgument(IllegalArgumentException): ResponseEntity
+    +handleGeneric(Exception): ResponseEntity
+  }
+}
+
+package "Registration Service" as RS #D4EDDA {
+  class RegistrationServiceApplication {
+    +main(String[] args): void
+  }
+
+  class RegistrationController {
+    -registrationService: RegistrationService
+    +createRegistration(RegistrationDTO): ResponseEntity<RegistrationResponseDTO>
+    +cancelRegistration(Long): ResponseEntity<Void>
+    +getRegistrationById(Long): ResponseEntity<RegistrationResponseDTO>
+    +getRegistrationsByEvent(Long): ResponseEntity<List<RegistrationResponseDTO>>
+    +getRegistrationsByParticipant(Long): ResponseEntity<List<RegistrationResponseDTO>>
+  }
+
+  interface RegistrationService {
+    +createRegistration(RegistrationDTO): RegistrationResponseDTO
+    +cancelRegistration(Long): void
+    +getRegistrationsByEvent(Long): List<RegistrationResponseDTO>
+    +getRegistrationsByParticipant(Long): List<RegistrationResponseDTO>
+    +getRegistrationById(Long): RegistrationResponseDTO
+  }
+
+  class RegistrationServiceImpl {
+    -registrationRepository: RegistrationRepository
+    -participantRepository: ParticipantRepository
+    +createRegistration(RegistrationDTO): RegistrationResponseDTO
+    +cancelRegistration(Long): void
+    +getRegistrationsByEvent(Long): List<RegistrationResponseDTO>
+    +getRegistrationsByParticipant(Long): List<RegistrationResponseDTO>
+    +getRegistrationById(Long): RegistrationResponseDTO
+  }
+
+  interface RegistrationRepository {
+    +findByEventId(Long): List<Registration>
+    +findByParticipantId(Long): List<Registration>
+    +countByEventIdAndStatus(Long, RegistrationStatus): long
+    +existsByEventIdAndParticipantId(Long, Long): boolean
+    +findByEventIdAndStatus(Long, RegistrationStatus): List<Registration>
+  }
+
+  interface ParticipantRepository {
+    +findByEmail(String): Optional<Participant>
+  }
+
+  class Registration {
+    -id: Long
+    -eventId: Long
+    -participant: Participant
+    -registrationDate: LocalDateTime
+    -status: RegistrationStatus
+    -createdAt: LocalDateTime
+    -updatedAt: LocalDateTime
+    <<enum>> RegistrationStatus { CONFIRMED, CANCELLED, WAITLISTED }
+  }
+
+  class Participant {
+    -id: Long
+    -name: String
+    -email: String
+    -phone: String
+    -createdAt: LocalDateTime
+    -updatedAt: LocalDateTime
+  }
+
+  class RegistrationDTO {
+    -eventId: Long
+    -participantId: Long
+    -participantName: String
+    -participantEmail: String
+    -status: String
+  }
+
+  class RegistrationResponseDTO {
+    -id: Long
+    -eventId: Long
+    -participantId: Long
+    -participantName: String
+    -participantEmail: String
+    -registrationDate: LocalDateTime
+    -status: String
+    -createdAt: LocalDateTime
+    +fromEntity(Registration): RegistrationResponseDTO
+  }
+}
+
+package "User Service" as US #F8D7DA {
+  class UserServiceApplication {
+    +main(String[] args): void
+  }
+
+  class AuthController {
+    -authService: AuthService
+    +registerUser(SignupRequest): ResponseEntity<?>
+    +authenticateUser(LoginRequest): ResponseEntity<?>
+  }
+
+  class UserController {
+    -userService: UserService
+    +getUserById(Long): ResponseEntity<UserDTO>
+    +updateUser(Long, UserDTO): ResponseEntity<UserDTO>
+    +deleteUser(Long): ResponseEntity<Void>
+  }
+
+  interface AuthService {
+    +registerUser(SignupRequest): MessageResponse
+    +authenticateUser(LoginRequest): JwtResponse
+  }
+
+  class AuthServiceImpl {
+    -authenticationManager: AuthenticationManager
+    -userRepository: UserRepository
+    -roleRepository: RoleRepository
+    -passwordEncoder: PasswordEncoder
+    -jwtUtils: JwtUtils
+    +registerUser(SignupRequest): MessageResponse
+    +authenticateUser(LoginRequest): JwtResponse
+  }
+
+  interface UserService {
+    +getUserById(Long): UserDTO
+    +updateUser(Long, UserDTO): UserDTO
+    +deleteUser(Long): void
+  }
+
+  class UserServiceImpl {
+    -userRepository: UserRepository
+    +getUserById(Long): UserDTO
+    +updateUser(Long, UserDTO): UserDTO
+    +deleteUser(Long): void
+  }
+
+  interface UserRepository {
+    +findByUsername(String): Optional<User>
+    +findByEmail(String): Optional<User>
+    +existsByUsername(String): Boolean
+    +existsByEmail(String): Boolean
+  }
+
+  interface RoleRepository {
+    +findByName(String): Optional<Role>
+  }
+
+  class User {
+    -id: Long
+    -username: String
+    -email: String
+    -password: String
+    -firstName: String
+    -lastName: String
+    -phoneNumber: String
+    -enabled: boolean
+    -accountNonLocked: boolean
+    -accountNonExpired: boolean
+    -credentialsNonExpired: boolean
+    -lastLoginDate: LocalDateTime
+    -createdAt: LocalDateTime
+    -updatedAt: LocalDateTime
+    -roles: Set<Role>
+  }
+
+  class Role {
+    -id: Long
+    -name: String
+  }
+
+  class SignupRequest {
+    -username: String
+    -email: String
+    -password: String
+    -firstName: String
+    -lastName: String
+    -phoneNumber: String
+  }
+
+  class LoginRequest {
+    -username: String
+    -password: String
+  }
+
+  class JwtResponse {
+    -token: String
+    -type: String
+    -id: Long
+    -username: String
+    -email: String
+    -roles: List<String>
+  }
+
+  class MessageResponse {
+    -message: String
+  }
+
+  class UserDTO {
+    -id: Long
+    -username: String
+    -email: String
+    -firstName: String
+    -lastName: String
+    -phoneNumber: String
+    -enabled: boolean
+    -roles: List<String>
+    -createdAt: LocalDateTime
+    +fromEntity(User): UserDTO
+  }
+
+  class JwtUtils {
+    +generateJwtToken(Authentication): String
+    +getUserNameFromJwtToken(String): String
+    +validateJwtToken(String): boolean
+  }
+
+  class AuthTokenFilter {
+    -jwtUtils: JwtUtils
+    -userDetailsService: UserDetailsServiceImpl
+    +doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain): void
+  }
+
+  class WebSecurityConfig {
+    +filterChain(HttpSecurity): SecurityFilterChain
+    +authenticationProvider(): DaoAuthenticationProvider
+    +authenticationManager(AuthenticationConfiguration): AuthenticationManager
+    +passwordEncoder(): PasswordEncoder
+  }
+
+  class UserDetailsServiceImpl {
+    -userRepository: UserRepository
+    +loadUserByUsername(String): UserDetails
+  }
+
+  class GlobalExceptionHandler {
+    +handleResourceNotFound(ResourceNotFoundException): ResponseEntity<MessageResponse>
+    +handleBadCredentials(BadCredentialsException): ResponseEntity<MessageResponse>
+    +handleUsernameNotFound(UsernameNotFoundException): ResponseEntity<MessageResponse>
+    +handleIllegalArgument(IllegalArgumentException): ResponseEntity<MessageResponse>
+    +handleGenericException(Exception): ResponseEntity<MessageResponse>
+  }
+}
+
+package "API Gateway" as GW #E8DAEF {
+  class ApiGatewayApplication {
+    +main(String[] args): void
+  }
+
+  class RouteConfig {
+    +customRouteLocator(RouteLocatorBuilder): RouteLocator
+  }
+
+  class JwtUtils {
+    +getUserNameFromJwtToken(String): String
+    +validateJwtToken(String): boolean
+  }
+
+  class JwtAuthenticationFilter {
+    -jwtUtils: JwtUtils
+    +filter(ServerWebExchange, GatewayFilterChain): Mono<Void>
+  }
+
+  class GlobalErrorHandler {
+    +errorAttributes(): ErrorAttributes
+    +errorRouterFunction(ServerCodecConfigurer): RouterFunction<ServerResponse>
+  }
+}
+
+package "Discovery Service" as DS #D5F5E3 {
+  class DiscoveryServiceApplication {
+    +main(String[] args): void
+  }
+}
+
+package "UI Service" as UIS #FADBD8 {
+  class UiServiceApplication {
+    +main(String[] args): void
+  }
+
+  class HomeController {
+    +index(): String
+    +login(): String
+    +register(): String
+    +eventsList(): String
+    +createEvent(): String
+    +eventDetail(String): String
+    +profile(): String
+  }
+}
+
+' Relationships - Event Service
+EventController --> EventService : uses
+EventServiceImpl ..|> EventService : implements
+EventServiceImpl --> EventRepository : uses
+EventRepository ..|> JpaRepository : extends
+EventController --> EventDTO : receives
+EventController --> EventResponseDTO : returns
+EventServiceImpl --> Event : creates/manages
+EventResponseDTO --> Event : converts from
+
+' Relationships - Registration Service
+RegistrationController --> RegistrationService : uses
+RegistrationServiceImpl ..|> RegistrationService : implements
+RegistrationServiceImpl --> RegistrationRepository : uses
+RegistrationServiceImpl --> ParticipantRepository : uses
+RegistrationController --> RegistrationDTO : receives
+RegistrationController --> RegistrationResponseDTO : returns
+Registration --> Participant : Many-to-One
+RegistrationRepository ..|> JpaRepository : extends
+ParticipantRepository ..|> JpaRepository : extends
+
+' Relationships - User Service
+AuthController --> AuthService : uses
+UserController --> UserService : uses
+AuthServiceImpl ..|> AuthService : implements
+UserServiceImpl ..|> UserService : implements
+AuthServiceImpl --> UserRepository : uses
+AuthServiceImpl --> RoleRepository : uses
+AuthServiceImpl --> JwtUtils : uses
+AuthServiceImpl --> PasswordEncoder : uses
+AuthServiceImpl --> AuthenticationManager : uses
+UserServiceImpl --> UserRepository : uses
+AuthTokenFilter --> JwtUtils : uses
+AuthTokenFilter --> UserDetailsServiceImpl : uses
+WebSecurityConfig --> AuthTokenFilter : injects
+WebSecurityConfig --> UserDetailsServiceImpl : injects
+UserDetailsServiceImpl --> UserRepository : uses
+User --> Role : Many-to-Many
+UserRepository ..|> JpaRepository : extends
+RoleRepository ..|> JpaRepository : extends
+
+' Aspects
+LoggingAspect --> EventService : pointcut
+LoggingAspect --> EventRepository : pointcut
+PerformanceMonitoringAspect --> EventService : pointcut
+
+' Exceptions
+GlobalExceptionHandler --> ResourceNotFoundException : handles
+
+' Gateway
+JwtAuthenticationFilter --> JwtUtils : uses
+Gateway --> RouteConfig : configures
+GlobalErrorHandler --> Gateway : handles errors
+
+@enduml

@@ -1,0 +1,90 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam entity {
+  BackgroundColor #E8F4FD
+  BorderColor #2E86C1
+}
+
+!define primary_key(x) <b><color:#E74C3C><u>x</u></color></b>
+!define foreign_key(x) <color:#2ECC71><i>x</i></color>
+
+entity "users" as users {
+  primary_key(id): BIGINT PK <<generated>>
+  --
+  username: VARCHAR(50) UNIQUE NOT NULL
+  email: VARCHAR(100) UNIQUE NOT NULL
+  password: VARCHAR(255) NOT NULL
+  first_name: VARCHAR(50)
+  last_name: VARCHAR(50)
+  phone_number: VARCHAR(20)
+  enabled: BOOLEAN DEFAULT TRUE
+  account_non_locked: BOOLEAN DEFAULT TRUE
+  account_non_expired: BOOLEAN DEFAULT TRUE
+  credentials_non_expired: BOOLEAN DEFAULT TRUE
+  last_login_date: TIMESTAMP
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "roles" as roles {
+  primary_key(id): BIGINT PK <<generated>>
+  --
+  name: VARCHAR(20) UNIQUE NOT NULL
+}
+
+entity "user_roles" as user_roles {
+  --
+  foreign_key(user_id): BIGINT FK
+  foreign_key(role_id): BIGINT FK
+}
+
+entity "events" as events {
+  primary_key(id): BIGINT PK <<generated>>
+  --
+  name: VARCHAR(200) NOT NULL
+  description: TEXT NOT NULL
+  location: VARCHAR(255) NOT NULL
+  start_date: TIMESTAMP NOT NULL
+  end_date: TIMESTAMP NOT NULL
+  capacity: INTEGER NOT NULL
+  status: VARCHAR(20) NOT NULL
+  organizer_id: BIGINT NOT NULL
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "participants" as participants {
+  primary_key(id): BIGINT PK <<generated>>
+  --
+  name: VARCHAR(100) NOT NULL
+  email: VARCHAR(100) UNIQUE NOT NULL
+  phone: VARCHAR(20)
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "registrations" as registrations {
+  primary_key(id): BIGINT PK <<generated>>
+  --
+  foreign_key(event_id): BIGINT FK
+  foreign_key(participant_id): BIGINT FK
+  registration_date: TIMESTAMP NOT NULL
+  status: VARCHAR(20) NOT NULL
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+users ||..o{ user_roles : "has"
+user_roles }o..|| roles : "assigned to"
+
+events ||..o{ registrations : "has"
+participants ||..o{ registrations : "makes"
+
+note right of users : User Service DB
+note right of events : Event Service DB
+note right of participants : Registration Service DB
+note right of registrations : Registration Service DB
+
+note bottom of user_roles : Junction table for\nMany-to-Many relationship
+
+@enduml

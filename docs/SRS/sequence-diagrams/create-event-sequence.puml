@@ -1,0 +1,42 @@
+@startuml
+actor "Event Organizer" as Organizer
+participant "UI (Thymeleaf)" as UI
+participant "API Gateway\n(:8080)" as Gateway
+participant "Event Controller" as Controller
+participant "Event Service" as Service
+participant "Event Repository" as Repository
+database "Event DB\n(PostgreSQL)" as DB
+
+Organizer -> UI: Fill event form & submit
+UI -> Gateway: POST /api/events\n(JWT in Authorization header)
+activate Gateway
+
+Gateway -> Gateway: Validate JWT token
+Gateway -> Controller: POST /api/events
+activate Controller
+
+Controller -> Service: createEvent(EventDTO)
+activate Service
+
+Service -> Repository: save(Event)
+activate Repository
+
+Repository -> DB: INSERT INTO events...
+activate DB
+DB --> Repository: Event entity
+deactivate DB
+
+Repository --> Service: saved Event
+deactivate Repository
+
+Service --> Controller: EventResponseDTO
+deactivate Service
+
+Controller --> Gateway: 201 Created
+deactivate Controller
+
+Gateway --> UI: JSON response
+deactivate Gateway
+
+UI --> Organizer: Show success page
+@enduml

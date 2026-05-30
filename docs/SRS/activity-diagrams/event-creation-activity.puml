@@ -1,0 +1,22 @@
+@startuml
+start
+
+:Organizer navigates to create event page;
+:Organizer fills event details form;
+(name, description, location, dates, capacity)
+
+:Organizer submits the form;
+
+if (System validates input) then (valid)
+  :System saves event to database;
+  :System sets event status to UPCOMING;
+  :System sends notification to organizer;
+  :System displays success message;
+  stop
+else (invalid)
+  :System displays validation errors;
+  :Organizer corrects input;
+  backward
+endif
+
+@enduml
