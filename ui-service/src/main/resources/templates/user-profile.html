@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Event Registration System</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">EventHub</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/events" class="nav-link">Events</a>
+                <div class="nav-right">
+                    <a href="/profile" class="nav-link active" id="profileLink">Profile</a>
+                    <a href="#" class="nav-link" id="logoutLink">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-page">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <span id="avatarInitials">U</span>
+                </div>
+                <div class="profile-info">
+                    <h2 id="profileUsername">Loading...</h2>
+                    <p id="profileEmail" class="profile-email">Loading...</p>
+                </div>
+            </div>
+            <div class="profile-details">
+                <h3>Account Details</h3>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Username</span>
+                        <span class="detail-value" id="detailUsername">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value" id="detailEmail">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">First Name</span>
+                        <span class="detail-value" id="detailFirstName">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Last Name</span>
+                        <span class="detail-value" id="detailLastName">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value" id="detailPhone">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Roles</span>
+                        <span class="detail-value" id="detailRoles">-</span>
+                    </div>
+                </div>
+            </div>
+            <div id="profileError" class="form-error" style="display:none"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>EventHub</h4>
+                <p>Your complete event management solution.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="/">Home</a>
+                <a href="/events">Events</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 EventHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>

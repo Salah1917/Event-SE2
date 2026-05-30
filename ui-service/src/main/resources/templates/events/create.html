@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event - Event Registration System</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">EventHub</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/events" class="nav-link">Events</a>
+                <div class="nav-right">
+                    <a href="/events/create" class="nav-link active">Create Event</a>
+                    <a href="/profile" class="nav-link" id="profileLink">Profile</a>
+                    <a href="#" class="nav-link" id="logoutLink">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="form-page">
+        <div class="form-container form-container-lg">
+            <div class="form-header">
+                <h2>Create New Event</h2>
+                <p>Fill in the details below to create your event</p>
+            </div>
+            <form id="createEventForm" class="form" onsubmit="return handleCreateEvent(event)">
+                <div class="form-group">
+                    <label for="name">Event Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter event name" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Describe your event" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" placeholder="Enter event location" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startDate">Start Date & Time</label>
+                        <input type="datetime-local" id="startDate" name="startDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">End Date & Time</label>
+                        <input type="datetime-local" id="endDate" name="endDate" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="capacity">Capacity</label>
+                    <input type="number" id="capacity" name="capacity" min="1" placeholder="Maximum number of participants" required>
+                </div>
+                <div id="createEventError" class="form-error" style="display:none"></div>
+                <button type="submit" class="btn btn-primary btn-block">Create Event</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>EventHub</h4>
+                <p>Your complete event management solution.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="/">Home</a>
+                <a href="/events">Events</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 EventHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>

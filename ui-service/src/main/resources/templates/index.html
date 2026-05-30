@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration System</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">EventHub</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">Home</a>
+                <a href="/events" class="nav-link">Events</a>
+                <div class="nav-right">
+                    <a href="/login" class="nav-link" id="loginLink">Login</a>
+                    <a href="/register" class="nav-link btn-primary" id="registerLink">Register</a>
+                    <a href="/profile" class="nav-link" id="profileLink" style="display:none">Profile</a>
+                    <a href="#" class="nav-link" id="logoutLink" style="display:none">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Event Registration System</h1>
+            <p>Streamline your event management with our all-in-one platform. Create, manage, and track event registrations effortlessly.</p>
+            <div class="hero-actions">
+                <a href="/events" class="btn btn-primary btn-lg">Browse Events</a>
+                <a href="/register" class="btn btn-outline btn-lg">Get Started</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="section-title">
+            <h2>Everything You Need</h2>
+            <p>Powerful features to make event management a breeze</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">+</div>
+                <h3>Create Events</h3>
+                <p>Set up events with detailed information including dates, locations, and capacity limits in minutes.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">+</div>
+                <h3>Register Participants</h3>
+                <p>Allow participants to register easily and manage their attendance with real-time tracking.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">+</div>
+                <h3>Manage Everything</h3>
+                <p>From user profiles to event analytics, manage your entire event lifecycle from one dashboard.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <span class="stat-number">100+</span>
+                <span class="stat-label">Events Hosted</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">1000+</span>
+                <span class="stat-label">Registered Users</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">99%</span>
+                <span class="stat-label">Satisfaction Rate</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Support</span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>EventHub</h4>
+                <p>Your complete event management solution for creating, managing, and tracking events.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="/">Home</a>
+                <a href="/events">Events</a>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>support@eventhub.com</p>
+                <p>+1 (555) 123-4567</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 EventHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>
